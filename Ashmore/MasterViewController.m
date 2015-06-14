@@ -27,6 +27,37 @@
 
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
     self.navigationItem.rightBarButtonItem = addButton;
+    
+    _nearableManager = [ESTNearableManager new];
+    _nearableManager.delegate = self;
+    [_nearableManager startMonitoringForType:ESTNearableTypeGeneric];
+    
+}
+
+- (void)nearableManager:(ESTNearableManager *)manager didEnterTypeRegion:(ESTNearableType)type {
+    if(type == ESTNearableTypeGeneric) {
+        NSLog(@"Entered area");
+        [_nearableManager startRangingForType:ESTNearableTypeGeneric];
+    }
+}
+
+- (void)nearableManager:(ESTNearableManager *)manager didRangeNearables:(NSArray *)nearables withType:(ESTNearableType)type {
+    NSLog(@"Ranged lots of nearables %@", nearables);
+    UILocalNotification *notification = [[UILocalNotification alloc] init];
+    notification.alertBody = @"Don't forget your lunch Max!";
+    notification.soundName = UILocalNotificationDefaultSoundName;
+    
+    [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+    [_nearableManager stopRanging];
+}
+
+- (void)nearableManager:(ESTNearableManager *)manager didRangeNearable:(ESTNearable *)nearable {
+    NSLog(@"Ranging nearable %@", nearable);
+}
+
+- (void)nearableManager:(ESTNearableManager *)manager didExitTypeRegion:(ESTNearableType)type {
+    NSLog(@"Left area");
+    [_nearableManager stopRanging];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -60,14 +91,13 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.objects.count;
+    return 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
 
-    NSDate *object = self.objects[indexPath.row];
-    cell.textLabel.text = [object description];
+    cell.textLabel.text = @"Desk";
     return cell;
 }
 

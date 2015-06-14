@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EstimoteSDK/EstimoteSDK.h"
 
-@interface MasterViewController : UITableViewController
+@interface MasterViewController : UITableViewController <ESTNearableManagerDelegate>
 
+@property ESTNearableManager *nearableManager;
 
 @end
 
