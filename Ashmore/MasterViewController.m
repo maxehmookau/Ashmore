@@ -31,22 +31,32 @@
     _nearableManager = [ESTNearableManager new];
     _nearableManager.delegate = self;
     [_nearableManager startMonitoringForType:ESTNearableTypeGeneric];
+    [_nearableManager startMonitoringForType:ESTNearableTypeBed];
     
 }
 
 - (void)nearableManager:(ESTNearableManager *)manager didEnterTypeRegion:(ESTNearableType)type {
     if(type == ESTNearableTypeGeneric) {
-        NSLog(@"Entered area");
+        NSLog(@"Entered generic area");
         [_nearableManager startRangingForType:ESTNearableTypeGeneric];
+    }else if (type == ESTNearableTypeBed) {
+        NSLog(@"Entered bedroom area");
+        [_nearableManager startRangingForType:ESTNearableTypeBed];
     }
 }
 
 - (void)nearableManager:(ESTNearableManager *)manager didRangeNearables:(NSArray *)nearables withType:(ESTNearableType)type {
-    NSLog(@"Ranged lots of nearables %@", nearables);
     UILocalNotification *notification = [[UILocalNotification alloc] init];
-    notification.alertBody = @"Don't forget your lunch Max!";
-    notification.soundName = UILocalNotificationDefaultSoundName;
-    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Entered area" message:@"HELLO!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+    [alert show];
+    if (type == ESTNearableTypeBed) {
+        notification.alertBody = @"Sleep well Max...";
+        notification.soundName = UILocalNotificationDefaultSoundName;
+    } else if (type == ESTNearableTypeGeneric) {
+        notification.alertBody = @"Don't forget your lunch Max!";
+        notification.soundName = UILocalNotificationDefaultSoundName;
+    }
+    NSLog(@"Ranged lots of nearables %@", nearables);
     [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
     [_nearableManager stopRanging];
 }
